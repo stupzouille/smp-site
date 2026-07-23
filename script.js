@@ -30,8 +30,8 @@
 
     /* ---- 🌐 SERVEUR ---- */
     server: {
-      ip:      'monserveur.fr',                 // ⚠️ À DÉFINIR — domaine .fr du nouveau SMP
-      discord: 'https://discord.gg/xxxxxxx',    // ⚠️ À DÉFINIR — invitation Discord
+      ip:      'mochismp.fr',                 // ⚠️ À DÉFINIR — domaine .fr du nouveau SMP
+      discord: 'https://discord.gg/mochismp',    // ⚠️ À DÉFINIR — invitation Discord
       showStatus:  true,                        // affiche le nombre de joueurs connectés (live)
       statusHost:  '',                          // laisse vide = utilise `ip` ci-dessus. Sinon force un hôte:port (ex. 'play.serveur.fr:25565')
       refreshMs:   60000                        // rafraîchissement du compteur (60 s)
