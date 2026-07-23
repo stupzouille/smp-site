@@ -1,0 +1,18 @@
+# Système
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Éditeurs
+.vscode/
+.idea/
+*.code-workspace
+
+# Dépendances / build (au cas où le projet évolue)
+node_modules/
+dist/
+.cache/
+
+# Divers
+*.log
+*.tmp

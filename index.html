@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- ⚠️ NOM DU PROJET À DÉFINIR — placeholder « SMP » en attendant -->
+  <title>SMP - Serveur Minecraft & Boutique</title>
+  <meta name="description" content="Serveur Minecraft SMP crossplay (Java & Bedrock). Recharge ton compte avec nos Packs de monnaie et soutiens le serveur.">
+
+  <!-- Favicon : remplace par ton logo (ex. assets/logo.webp) -->
+  <link rel="icon" href="assets/logo.webp" type="image/webp">
+
+  <!-- Polices Google : Baloo 2 (titres) + Inter (texte) — DA conservée -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ==========================================================
+       HEADER / BANNIÈRE  (DA identique à l'ancien site)
+       ========================================================== -->
+  <header class="hero">
+    <div class="hero__bg" aria-hidden="true"></div>
+    <div class="hero__veil" aria-hidden="true"></div>
+    <div class="petals" id="petals" aria-hidden="true"></div>
+
+    <nav class="nav">
+      <a class="nav__brand" href="#top">
+        <img src="assets/logo.webp" alt="Logo du serveur" class="nav__logo" onerror="this.style.display='none'">
+        <!-- ⚠️ NOM DU PROJET À DÉFINIR -->
+        <span>Mon<span class="accent">SMP</span></span>
+      </a>
+      <ul class="nav__links">
+        <li><a href="#boutique">Boutique</a></li>
+        <li><a href="#staff">Équipe</a></li>
+        <li><a href="#" data-discord target="_blank" rel="noopener">Discord</a></li>
+      </ul>
+    </nav>
+
+    <div class="hero__content">
+      <img src="assets/logo.webp" alt="Serveur SMP" class="hero__logo" onerror="this.remove()">
+
+      <!-- ⚠️ NOM DU PROJET À DÉFINIR -->
+      <h1 class="hero__title">Mon<span class="accent">SMP</span></h1>
+      <p class="hero__tagline">Survie&nbsp;• Compétition&nbsp;• Aventure&nbsp;• Crossplay</p>
+
+      <div class="hero__actions">
+        <button class="btn btn--primary" id="copyIpBtn" data-ip="" type="button">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H4a2 2 0 0 0-2 2v14h2V3h12V1Zm3 4H8a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2Zm0 16H8V7h11v14Z"/></svg>
+          <span>Copier l'IP&nbsp;: <strong data-ip-text>monserveur.fr</strong></span>
+        </button>
+
+        <a class="btn btn--discord" href="#" data-discord target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.32 4.57A19.8 19.8 0 0 0 15.43 3c-.21.38-.46.9-.63 1.31a18.3 18.3 0 0 0-5.6 0C9.03 3.9 8.77 3.38 8.56 3a19.7 19.7 0 0 0-4.89 1.57C.57 9.2-.27 13.7.15 18.14A19.9 19.9 0 0 0 6.16 21c.48-.66.91-1.37 1.28-2.11-.7-.27-1.37-.6-2-.98.17-.13.33-.26.49-.4a14.2 14.2 0 0 0 12.14 0c.16.14.32.27.49.4-.63.38-1.3.71-2 .98.37.74.8 1.45 1.28 2.11a19.9 19.9 0 0 0 6.01-2.86c.5-5.14-.85-9.6-3.53-13.57ZM8.02 15.42c-1.18 0-2.15-1.08-2.15-2.4s.95-2.41 2.15-2.41 2.17 1.09 2.15 2.41c0 1.32-.95 2.4-2.15 2.4Zm7.96 0c-1.18 0-2.15-1.08-2.15-2.4s.95-2.41 2.15-2.41 2.17 1.09 2.15 2.41c0 1.32-.95 2.4-2.15 2.4Z"/></svg>
+          <span>Rejoindre le Discord</span>
+        </a>
+      </div>
+
+      <p class="hero__version">Crossplay Java &amp; Bedrock · Serveur en ligne 24/7</p>
+    </div>
+
+    <div class="hero__wave" aria-hidden="true"></div>
+  </header>
+
+  <!-- ==========================================================
+       CORPS : BOUTIQUE (gauche) + SIDEBAR (droite)
+       ========================================================== -->
+  <div class="layout" id="top">
+
+    <main class="shop" id="boutique">
+      <header class="section-head">
+        <p class="eyebrow">Boutique officielle</p>
+        <!-- « data-currency » est remplacé par le nom réel de la monnaie (script.js) -->
+        <h2>Recharge ton compte en <span data-currency>Monnaie</span> 🌸</h2>
+        <p class="section-sub">
+          La monnaie <strong data-currency>Monnaie</strong> s'achète par <strong>Packs</strong> et
+          se dépense en jeu (grades, lootboxes, duels…). Livraison automatique sur ton compte
+          via ton pseudo/UUID Minecraft après le paiement.
+        </p>
+      </header>
+
+      <!-- ----- PACKS DE MONNAIE ----- -->
+      <h3 class="group-title">Packs de <span data-currency>Monnaie</span></h3>
+
+      <!-- Les cartes sont générées depuis CONFIG.packs dans script.js -->
+      <div class="grid" id="packs-grid"></div>
+
+      <noscript>
+        <p class="shop-note">
+          ⚠️ Le JavaScript est désactivé : les Packs ne peuvent pas s'afficher.
+          Active-le, ou passe commande directement sur le
+          <a href="#" data-discord>Discord</a>.
+        </p>
+      </noscript>
+
+      <p class="shop-note">
+        💡 Indique ton pseudo Minecraft exact au moment du paiement — la
+        <strong data-currency>Monnaie</strong> est créditée automatiquement sur ce compte.
+        Des <strong>codes de réduction</strong> seront acceptés au paiement.
+        Un souci&nbsp;? Ouvre un ticket sur le
+        <a href="#" data-discord target="_blank" rel="noopener">Discord</a>.
+      </p>
+    </main>
+
+    <!-- ----- SIDEBAR : STAFF + INFOS ----- -->
+    <aside class="sidebar" id="staff">
+      <section class="panel">
+        <h3 class="panel__title">👑 L'équipe</h3>
+
+        <p class="staff-rank staff-rank--owner">Owner</p>
+        <ul class="staff-list">
+          <li class="staff">
+            <img class="staff__avatar" src="assets/staff/north.png" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'staff__avatar staff__avatar--fallback',textContent:'N'}))">
+            <span class="staff__name">North</span>
+            <span class="staff__tag staff__tag--owner">Owner</span>
+          </li>
+        </ul>
+
+        <p class="staff-rank staff-rank--dev">Lead Developer</p>
+        <ul class="staff-list">
+          <li class="staff">
+            <img class="staff__avatar" src="assets/staff/banquee.png" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'staff__avatar staff__avatar--fallback',textContent:'B'}))">
+            <span class="staff__name">Banquee</span>
+            <span class="staff__tag staff__tag--dev">Dev</span>
+          </li>
+          <li class="staff">
+            <img class="staff__avatar" src="assets/staff/stup.png" alt="" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'staff__avatar staff__avatar--fallback',textContent:'S'}))">
+            <span class="staff__name">stup</span>
+            <span class="staff__tag staff__tag--dev">Dev</span>
+          </li>
+        </ul>
+      </section>
+
+      <section class="panel panel--cta">
+        <h3 class="panel__title">🌸 Nous rejoindre</h3>
+        <p class="panel__ip" data-ip-text>monserveur.fr</p>
+        <button class="btn btn--ghost btn--block" data-ip="" type="button">Copier l'IP</button>
+        <a class="btn btn--discord btn--block" href="#" data-discord target="_blank" rel="noopener">Discord</a>
+      </section>
+
+      <section class="panel">
+        <h3 class="panel__title">📜 Infos</h3>
+        <ul class="info-list">
+          <li><span>Édition</span><strong>Java &amp; Bedrock</strong></li>
+          <li><span>Mode</span><strong>SMP</strong></li>
+          <li><span>Monnaie</span><strong data-currency>Monnaie</strong></li>
+          <li><span>Disponibilité</span><strong>24/7</strong></li>
+        </ul>
+      </section>
+    </aside>
+  </div>
+
+  <footer class="footer">
+    <!-- ⚠️ NOM DU PROJET À DÉFINIR -->
+    <p class="footer__brand">Mon<span class="accent">SMP</span></p>
+    <p>IP&nbsp;: <strong data-ip-text>monserveur.fr</strong> · <a href="#" data-discord target="_blank" rel="noopener">Discord</a></p>
+    <p class="footer__legal">
+      © <span id="year">2026</span> - Site non affilié à Mojang AB ou Microsoft.
+      Les achats sont des soutiens volontaires et non remboursables.
+    </p>
+  </footer>
+
+  <!-- Notification "IP copiée" -->
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
