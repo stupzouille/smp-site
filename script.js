@@ -3,8 +3,10 @@
    1. ⚙️ CONFIG CENTRALISÉE  ← nom de la monnaie, IP, Discord, Packs (à éditer ici)
    2. Rendu des cartes « Pack de monnaie » depuis la config
    3. Bouton « Copier l'IP » + notification toast
-   4. Pétales animés dans la bannière
-   5. Année automatique dans le footer
+   4. Statut serveur (nombre de joueurs connectés, live)
+   5. Pétales animés dans la bannière
+   6. Année automatique dans le footer
+   7. Garde-fou boutons « Acheter »
    ========================================================================== */
 
 (function () {
@@ -29,7 +31,10 @@
     /* ---- 🌐 SERVEUR ---- */
     server: {
       ip:      'monserveur.fr',                 // ⚠️ À DÉFINIR — domaine .fr du nouveau SMP
-      discord: 'https://discord.gg/xxxxxxx'     // ⚠️ À DÉFINIR — invitation Discord
+      discord: 'https://discord.gg/xxxxxxx',    // ⚠️ À DÉFINIR — invitation Discord
+      showStatus:  true,                        // affiche le nombre de joueurs connectés (live)
+      statusHost:  '',                          // laisse vide = utilise `ip` ci-dessus. Sinon force un hôte:port (ex. 'play.serveur.fr:25565')
+      refreshMs:   60000                        // rafraîchissement du compteur (60 s)
     },
 
     /* ---- 🎁 PACKS VENDUS SUR LA BOUTIQUE ----
@@ -41,6 +46,7 @@
        payUrl   : lien de paiement (Tebex, Stripe, PayPal…). Vide = « bientôt ».
     */
     packs: [
+      { id: 'pack-recharge',   name: 'Pack Recharge',   amount: 150,   bonus: 0,  price: '1.99',  tag: 'Recharge',  payUrl: '' },
       { id: 'pack-decouverte', name: 'Pack Découverte', amount: 500,   bonus: 0,  price: '4.99',  tag: 'Starter',   payUrl: '' },
       { id: 'pack-aventurier', name: 'Pack Aventurier', amount: 1200,  bonus: 10, price: '9.99',  tag: 'Bonus +10%', payUrl: '' },
       { id: 'pack-guerrier',   name: 'Pack Guerrier',   amount: 2500,  bonus: 15, price: '19.99', tag: 'Populaire',  featured: true, payUrl: '' },
@@ -171,7 +177,57 @@
   });
 
   /* ==========================================================================
-     4. PÉTALES DE CERISIER (décoratif)
+     4. STATUT SERVEUR — nombre de joueurs connectés (live)
+     --------------------------------------------------------------------------
+     Le site est statique (GitHub Pages) : on interroge une API publique de
+     statut Minecraft (api.mcstatus.io, CORS ouvert) côté navigateur.
+     Tant que l'IP est un placeholder / le serveur hors ligne, on affiche
+     proprement « Serveur hors ligne ». Ça s'activera tout seul quand l'IP
+     pointera vers un vrai serveur en ligne.
+     ========================================================================== */
+  (function () {
+    if (!CONFIG.server.showStatus) return;
+
+    var host = CONFIG.server.statusHost || CONFIG.server.ip;
+    var pill = document.getElementById('serverStatus');
+    var text = document.getElementById('serverStatusText');
+    var counters = document.querySelectorAll('[data-player-count]');
+
+    function setState(cls, label, count) {
+      if (pill) {
+        pill.hidden = false;
+        pill.classList.remove('is-online', 'is-offline');
+        if (cls) pill.classList.add(cls);
+      }
+      if (text) text.textContent = label;
+      counters.forEach(function (el) { el.textContent = count; });
+    }
+
+    function refresh() {
+      fetch('https://api.mcstatus.io/v2/status/java/' + encodeURIComponent(host), { cache: 'no-store' })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          if (d && d.online) {
+            var on  = (d.players && typeof d.players.online === 'number') ? d.players.online : 0;
+            var max = (d.players && typeof d.players.max === 'number') ? d.players.max : null;
+            var noun = on >= 2 ? 'joueurs' : 'joueur';
+            setState('is-online', on + (max ? ' / ' + max : '') + ' ' + noun + ' en ligne', on);
+          } else {
+            setState('is-offline', 'Serveur hors ligne', '—');
+          }
+        })
+        .catch(function () {
+          setState('is-offline', 'Statut indisponible', '—');
+        });
+    }
+
+    refresh();
+    var ms = CONFIG.server.refreshMs;
+    if (ms && ms >= 10000) setInterval(refresh, ms);
+  })();
+
+  /* ==========================================================================
+     5. PÉTALES DE CERISIER (décoratif)
      ========================================================================== */
   var PETAL_COUNT = 16;
   var petalsBox = document.getElementById('petals');
@@ -195,13 +251,13 @@
   }
 
   /* ==========================================================================
-     5. ANNÉE DU FOOTER
+     6. ANNÉE DU FOOTER
      ========================================================================== */
   var yearEl = document.getElementById('year');
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   /* ==========================================================================
-     6. GARDE-FOU BOUTONS « ACHETER » (packs sans lien de paiement)
+     7. GARDE-FOU BOUTONS « ACHETER » (packs sans lien de paiement)
      Les liens vivent dans CONFIG.packs[].payUrl. Tant qu'un lien est vide,
      le bouton n'ouvre rien et prévient l'acheteur.
      ========================================================================== */

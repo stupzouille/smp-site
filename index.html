@@ -59,6 +59,12 @@
         </a>
       </div>
 
+      <!-- Statut live : nombre de joueurs connectés (rempli par script.js) -->
+      <p class="server-status" id="serverStatus" hidden>
+        <span class="server-status__dot" aria-hidden="true"></span>
+        <span id="serverStatusText">Vérification du serveur…</span>
+      </p>
+
       <p class="hero__version">Crossplay Java &amp; Bedrock · Serveur en ligne 24/7</p>
     </div>
 
@@ -147,6 +153,7 @@
           <li><span>Édition</span><strong>Java &amp; Bedrock</strong></li>
           <li><span>Mode</span><strong>SMP</strong></li>
           <li><span>Monnaie</span><strong data-currency>Monnaie</strong></li>
+          <li><span>Connectés</span><strong data-player-count>—</strong></li>
           <li><span>Disponibilité</span><strong>24/7</strong></li>
         </ul>
       </section>

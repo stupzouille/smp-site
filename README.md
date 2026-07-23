@@ -54,11 +54,24 @@ var CONFIG = {
 
 | Pack | Base | Bonus | Total crédité | Prix |
 | --- | --- | --- | --- | --- |
+| Recharge | 150 | — | 150 | 1.99 € |
 | Découverte | 500 | — | 500 | 4.99 € |
 | Aventurier | 1 200 | +10 % | 1 320 | 9.99 € |
 | Guerrier ⭐ | 2 500 | +15 % | 2 875 | 19.99 € |
 | Seigneur | 6 000 | +20 % | 7 200 | 39.99 € |
 | Légende | 15 000 | +25 % | 18 750 | 89.99 € |
+
+## 👥 Joueurs connectés (live)
+
+Le nombre de joueurs en ligne s'affiche automatiquement (pastille dans le hero +
+ligne « Connectés » de la sidebar). Le site étant statique, il interroge l'API
+publique **api.mcstatus.io** côté navigateur, à partir de `CONFIG.server.ip`.
+
+- Réglages dans `CONFIG.server` : `showStatus` (on/off), `statusHost` (forcer un
+  `hote:port` différent de l'IP affichée), `refreshMs` (intervalle, défaut 60 s).
+- Tant que l'IP est un placeholder ou le serveur hors ligne, la pastille affiche
+  **« Serveur hors ligne »**. Elle s'activera d'elle-même quand l'IP pointera vers
+  un vrai serveur en ligne.
 
 ## Configurer les liens de paiement
 
