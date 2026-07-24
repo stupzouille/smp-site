@@ -149,7 +149,19 @@ h1, h2, h3, h4 { font-family: var(--font-title); margin: 0; line-height: 1.15; }
 }
 .nav__brand:hover { text-decoration: none; }
 .nav__brand .accent { color: var(--lavender-200); }
-.nav__logo { width: 42px; height: 42px; object-fit: contain; }
+/* Logo-texte détouré : on pilote par la HAUTEUR, la largeur suit le ratio. */
+.nav__logo { height: 34px; width: auto; object-fit: contain; }
+/* Le logo porte déjà le nom : le texte en double est masqué visuellement
+   (toujours lu par Google et les lecteurs d'écran). Si l'image manque,
+   .nav__logo disparaît du DOM et ce sélecteur ne s'applique plus. */
+.nav__logo + .nav__brand-text {
+  position: absolute;
+  width: 1px; height: 1px;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
 .nav__links { display: flex; gap: .35rem; }
 .nav__links a {
   display: inline-block;
@@ -295,6 +307,8 @@ h1, h2, h3, h4 { font-family: var(--font-title); margin: 0; line-height: 1.15; }
   gap: .8rem;
   color: var(--lavender-200);
 }
+/* Un seul enfant flex : le `gap` ne s'applique qu'entre le texte et le trait. */
+.group-title__text { flex: none; }
 .group-title::after {
   content: "";
   flex: 1;

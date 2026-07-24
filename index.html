@@ -31,8 +31,11 @@
 
     <nav class="nav">
       <a class="nav__brand" href="#top">
-        <img src="assets/logo.png" alt="Logo AERA SRP" class="nav__logo" onerror="this.style.display='none'">
-        <span>AERA<span class="accent">SRP</span></span>
+        <!-- Logo détouré (transparent). Comme il contient déjà le nom écrit, le
+             texte ci-dessous est masqué visuellement ; il réapparaît tout seul
+             si l'image manque (le onerror retire l'img). -->
+        <img src="assets/logo_aera_wobackground.png" alt="AERA SRP" class="nav__logo" onerror="this.remove()">
+        <span class="nav__brand-text">AERA<span class="accent">SRP</span></span>
       </a>
       <ul class="nav__links">
         <li><a href="#boutique">Boutique</a></li>
@@ -91,7 +94,9 @@
       </header>
 
       <!-- ----- PACKS D'ÉTOILES ----- -->
-      <h3 class="group-title">Packs d'<span data-currency>Étoiles</span></h3>
+      <!-- Le titre entier tient dans UN seul span : .group-title est un flex
+           container, deux enfants séparés se verraient appliquer le `gap`. -->
+      <h3 class="group-title"><span class="group-title__text">Packs d'<span data-currency>Étoiles</span></span></h3>
 
       <!-- Les cartes sont générées depuis CONFIG.packs dans script.js -->
       <div class="grid" id="packs-grid"></div>
