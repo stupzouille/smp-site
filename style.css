@@ -93,7 +93,8 @@ h1, h2, h3, h4 { font-family: var(--font-title); margin: 0; line-height: 1.15; }
   position: relative;
   isolation: isolate;
   overflow: hidden;
-  padding: 0 0 6rem;
+  /* Volontairement compact : le haut de la boutique doit dépasser dès l'arrivée. */
+  padding: 0 0 3.2rem;
   text-align: center;
   color: var(--moon);
 }
@@ -175,11 +176,15 @@ h1, h2, h3, h4 { font-family: var(--font-title); margin: 0; line-height: 1.15; }
   z-index: 3;
   max-width: 860px;
   margin: 0 auto;
-  padding: 3rem 1.5rem 0;
+  padding: 1.5rem 1.5rem 0;
 }
+/* Le plafond en `vh` fait rétrécir le logo sur les écrans peu hauts, ce qui
+   garantit que la boutique dépasse même sur un portable 768p. */
 .hero__logo {
-  width: min(460px, 82%);
-  margin: 0 auto 1.2rem;
+  width: min(360px, 72%);
+  max-height: 22vh;
+  object-fit: contain;
+  margin: 0 auto .7rem;
   filter: drop-shadow(0 16px 40px rgba(124, 77, 214, .75));
 }
 /* Logo image présent -> le titre texte reste lisible par Google et les
@@ -217,14 +222,14 @@ h1, h2, h3, h4 { font-family: var(--font-title); margin: 0; line-height: 1.15; }
   text-shadow: 0 2px 16px rgba(0, 0, 0, .6);
 }
 .hero__actions {
-  margin-top: 2.2rem;
+  margin-top: 1.5rem;
   display: flex;
   flex-wrap: wrap;
   gap: .9rem;
   justify-content: center;
 }
 .hero__version {
-  margin-top: 1.4rem;
+  margin-top: .85rem;
   font-size: .9rem;
   font-weight: 500;
   color: var(--ink-soft);
@@ -234,7 +239,7 @@ h1, h2, h3, h4 { font-family: var(--font-title); margin: 0; line-height: 1.15; }
 .hero__wave {
   position: absolute;
   left: 0; right: 0; bottom: -1px;
-  height: 120px;
+  height: 70px;
   z-index: 2;
   background: linear-gradient(180deg, transparent, var(--night-900) 88%);
 }
@@ -627,7 +632,7 @@ h1, h2, h3, h4 { font-family: var(--font-title); margin: 0; line-height: 1.15; }
   display: inline-flex;
   align-items: center;
   gap: .5rem;
-  margin: 1.8rem auto 0;
+  margin: 1.1rem auto 0;
   padding: .45rem 1rem;
   border-radius: 999px;
   font-size: .9rem;
