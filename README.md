@@ -1,93 +1,85 @@
-# 🌸 SMP — Site & Boutique de Packs
+# ✦ AERA SRP — Site & Boutique
 
-Site vitrine + boutique du nouveau serveur Minecraft SMP.
-**La DA (thème rose/sakura) est reprise telle quelle de `MochiSMPSite` et sera retravaillée plus tard.**
+Site vitrine + boutique du serveur Minecraft **AERA SRP**.
 
-> ⚠️ Plusieurs valeurs sont des **placeholders à définir** : nom du projet, nom de la
-> monnaie, domaine `.fr`, invitation Discord. Elles sont toutes signalées et centralisées.
+- **IP du serveur :** `play.aerasrp.fr`
+- **Discord :** [discord.gg/yZ88ZS6T3e](https://discord.gg/yZ88ZS6T3e)
+- **Édition :** Java & Bedrock (crossplay)
+- **Monnaie virtuelle :** **Étoiles**, vendues par **Packs**
+
+**DA : lunaire / crépuscule** — nuit violette, améthyste, accents dorés pour les Étoiles.
+
+> ⚠️ Reste à fournir : le **logo** (`assets/logo.png`).
 
 ## Contenu
 
 | Fichier | Rôle |
 | --- | --- |
-| `index.html` | Structure (header, boutique de Packs, sidebar, footer) |
-| `style.css` | Thème rose/blanc repris de MochiSMPSite + styles des cartes Packs |
-| `script.js` | **Config centralisée** + rendu des Packs, copier l'IP, pétales |
-| `assets/` | Logo, bannière et avatars (repris de MochiSMPSite) |
+| `index.html` | Structure (header, boutique de Packs, sidebar, footer, modale d'achat) |
+| `style.css` | DA lunaire : fond nuit, cartes en verre, lueurs améthyste |
+| `script.js` | **Config centralisée** + rendu des Packs, copier l'IP, ciel étoilé, achat |
+| `assets/` | Logo et avatars du staff |
 
 Aucune dépendance, aucun build : ouvre `index.html` dans un navigateur.
 
-## 💰 Monnaie virtuelle vendue en Packs
+## Images à fournir
 
-Conformément au cahier des charges (§5), la monnaie payante est vendue **sous forme de
-Packs** sur la boutique. Tout se règle en haut de `script.js` dans l'objet **`CONFIG`** :
+- `assets/logo.png` — logo « AERA SRP ». S'il est absent, le titre texte prend le relais
+  (le site reste parfaitement fonctionnel).
+- **Bannière** : pas de bannière finale pour l'instant — le hero est un **dégradé lunaire
+  100 % CSS** avec ciel étoilé animé. Pour ajouter la bannière plus tard : dépose-la dans
+  `assets/banner.png` et décommente la ligne `url("assets/banner.png")` dans `.hero__bg`
+  (`style.css`).
+
+## ✦ Monnaie & Packs
+
+Tout se règle en haut de `script.js` dans l'objet **`CONFIG`** :
 
 ```js
-var CONFIG = {
-  currency: {
-    name:  'Pétales',   // ⚠️ NOM À DÉFINIR — change-le ICI, il se propage partout
-    short: 'Pétales',
-    icon:  '🌸'
-  },
-  server: {
-    ip:      'monserveur.fr',              // ⚠️ domaine .fr à définir
-    discord: 'https://discord.gg/xxxxxxx'  // ⚠️ invitation à définir
-  },
-  packs: [
-    { id:'pack-decouverte', name:'Pack Découverte', amount:500,   bonus:0,  price:'4.99',  ... },
-    { id:'pack-aventurier', name:'Pack Aventurier', amount:1200,  bonus:10, price:'9.99',  ... },
-    { id:'pack-guerrier',   name:'Pack Guerrier',   amount:2500,  bonus:15, price:'19.99', featured:true, ... },
-    { id:'pack-seigneur',   name:'Pack Seigneur',   amount:6000,  bonus:20, price:'39.99', ... },
-    { id:'pack-legende',    name:'Pack Légende',    amount:15000, bonus:25, price:'89.99', ... }
-  ]
-};
+currency: { name: 'Étoiles', short: 'Étoiles', icon: '✦' },
+server:   { ip: 'play.aerasrp.fr', discord: 'https://discord.gg/xxxxxxx', ... },
+payments: { apiBase: '' },   // URL du backend de paiement (voir plus bas)
 ```
 
-- **Nom de la monnaie** → une seule ligne (`currency.name`). Il se propage à tous les
-  textes marqués `data-currency` dans le HTML, aux titres et aux cartes.
-- **Bonus** → le total affiché sur la carte = `amount + amount × bonus%`
-  (ex. Pack Guerrier : 2 500 + 15 % = **2 875**).
-- **Ajouter / retirer un Pack** → ajoute ou enlève une entrée dans `packs`. La carte
-  se génère automatiquement.
+Le **nom de la monnaie** est défini une seule fois et se propage partout (titres, cartes,
+textes marqués `data-currency`).
 
-### Récapitulatif des Packs par défaut
+### Packs par défaut
 
 | Pack | Base | Bonus | Total crédité | Prix |
 | --- | --- | --- | --- | --- |
-| Recharge | 150 | — | 150 | 1.99 € |
-| Découverte | 500 | — | 500 | 4.99 € |
-| Aventurier | 1 200 | +10 % | 1 320 | 9.99 € |
-| Guerrier ⭐ | 2 500 | +15 % | 2 875 | 19.99 € |
-| Seigneur | 6 000 | +20 % | 7 200 | 39.99 € |
-| Légende | 15 000 | +25 % | 18 750 | 89.99 € |
+| 🌙 Croissant de Lune | 150 | — | 150 | 1.99 € |
+| 🌓 Premier Quartier | 500 | — | 500 | 4.99 € |
+| 🌕 Pleine Lune | 1 200 | +10 % | 1 320 | 9.99 € |
+| 🌌 Aura Crépusculaire ⭐ | 2 500 | +15 % | 2 875 | 19.99 € |
+| 🌘 Éclipse d'Améthyste | 6 000 | +20 % | 7 200 | 39.99 € |
+| 💫 Supernova | 15 000 | +25 % | 18 750 | 89.99 € |
+
+> ⚠️ Les `id` et les **totaux** doivent rester synchro avec le catalogue serveur
+> `../AeraSRP/payments/catalog.js` — c'est **lui** qui fait foi pour le prix réellement payé.
 
 ## 👥 Joueurs connectés (live)
 
-Le nombre de joueurs en ligne s'affiche automatiquement (pastille dans le hero +
-ligne « Connectés » de la sidebar). Le site étant statique, il interroge l'API
-publique **api.mcstatus.io** côté navigateur, à partir de `CONFIG.server.ip`.
+Le nombre de joueurs en ligne s'affiche automatiquement (pastille dans le hero + ligne
+« Connectés » de la sidebar), via l'API publique **api.mcstatus.io** interrogée depuis le
+navigateur à partir de `CONFIG.server.ip`. Si le serveur est hors ligne, la pastille
+affiche « Serveur hors ligne ».
 
-- Réglages dans `CONFIG.server` : `showStatus` (on/off), `statusHost` (forcer un
-  `hote:port` différent de l'IP affichée), `refreshMs` (intervalle, défaut 60 s).
-- Tant que l'IP est un placeholder ou le serveur hors ligne, la pastille affiche
-  **« Serveur hors ligne »**. Elle s'activera d'elle-même quand l'IP pointera vers
-  un vrai serveur en ligne.
+Réglages : `showStatus`, `statusHost`, `refreshMs` dans `CONFIG.server`.
 
-## Configurer les liens de paiement
+## 💳 Paiement (Stripe via le bot)
 
-Renseigne `payUrl` de chaque pack dans `CONFIG.packs` (Tebex, Stripe, PayPal,
-CraftingStore…). Tant qu'un `payUrl` est vide, le bouton « Acheter » affiche
-« Boutique bientôt disponible » au lieu d'ouvrir un lien.
+Le tunnel de paiement vit dans le **bot** (`../AeraSRP/payments/`, guide complet dans
+`../AeraSRP/PAYMENTS.md`). Côté site, une seule ligne à renseigner :
 
 ```js
-{ id:'pack-guerrier', ..., payUrl:'https://ton-serveur.tebex.io/package/1234567' }
+payments: { apiBase: 'https://<ton-domaine-bot>' }  // vide = boutons « bientôt »
 ```
 
-## Liaison boutique ➔ joueur
-
-La livraison est prévue **automatique via le pseudo/UUID Minecraft** (cf. cahier des
-charges §5). Côté front, on demande le pseudo au paiement ; la synchronisation réelle
-(crédit du solde en jeu) se fera côté serveur/plugin, non couvert par ce site statique.
+Quand elle est renseignée, « Acheter » ouvre une **modale de saisie du pseudo**, appelle
+`POST {apiBase}/checkout`, puis redirige vers **Stripe**. Après paiement, le bot crédite
+les Étoiles en jeu via le pont WebSocket. Le prix et le montant crédité sont **définis
+côté serveur** (le site n'envoie qu'un `packId` + le pseudo).
 
 ---
 

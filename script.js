@@ -1,12 +1,12 @@
 /* ==========================================================================
-   SMP — Scripts boutique
+   AERA SRP — Scripts boutique
    1. ⚙️ CONFIG CENTRALISÉE  ← nom de la monnaie, IP, Discord, Packs (à éditer ici)
    2. Rendu des cartes « Pack de monnaie » depuis la config
    3. Bouton « Copier l'IP » + notification toast
    4. Statut serveur (nombre de joueurs connectés, live)
-   5. Pétales animés dans la bannière
+   5. Ciel étoilé animé dans la bannière
    6. Année automatique dans le footer
-   7. Garde-fou boutons « Acheter »
+   7. Achat : saisie du pseudo + redirection Stripe (backend du bot)
    ========================================================================== */
 
 (function () {
@@ -23,35 +23,47 @@
 
     /* ---- 💰 MONNAIE VIRTUELLE ---- */
     currency: {
-      name:   'Pétales',   // ⚠️ PLACEHOLDER — NOM À DÉFINIR (cf. cahier des charges §5)
-      short:  'Pétales',   // forme courte affichée sous les compteurs
-      icon:   '🌸'         // emoji/icône de la monnaie (remplaçable par une <img> plus tard)
+      name:   'Étoiles',   // nom de la monnaie — se propage partout
+      short:  'Étoiles',   // forme courte affichée sous les compteurs
+      icon:   '✦'          // icône de la monnaie (remplaçable par une <img> plus tard)
     },
 
     /* ---- 🌐 SERVEUR ---- */
     server: {
-      ip:      'mochismp.fun',                 // ⚠️ À DÉFINIR — domaine .fr du nouveau SMP
-      discord: 'https://discord.gg/mochismp',    // ⚠️ À DÉFINIR — invitation Discord
+      ip:      'play.aerasrp.fr',
+      discord: 'https://discord.gg/yZ88ZS6T3e',  // invitation Discord AERA SRP
       showStatus:  true,                        // affiche le nombre de joueurs connectés (live)
       statusHost:  '',                          // laisse vide = utilise `ip` ci-dessus. Sinon force un hôte:port (ex. 'play.serveur.fr:25565')
       refreshMs:   60000                        // rafraîchissement du compteur (60 s)
     },
 
+    /* ---- 💳 PAIEMENT ---- */
+    payments: {
+      // URL publique du serveur de paiement du bot (voir AeraSRP/payments/).
+      // ⚠️ À DÉFINIR (ex. 'https://bot.monserveur.fr'). Vide = boutons « Acheter »
+      // en mode « boutique bientôt disponible » (aucun paiement déclenché).
+      apiBase: ''
+    },
+
     /* ---- 🎁 PACKS VENDUS SUR LA BOUTIQUE ----
-       amount   : quantité de base de monnaie
-       bonus    : pourcentage de bonus offert (0 = aucun)
+       amount   : quantité de base d'Étoiles
+       bonus    : pourcentage de bonus offert (0 = aucun) -> total = amount + bonus
        price    : prix en euros (string libre, ex. '4.99')
-       featured : true = carte mise en avant (bordure dégradée + ruban)
+       icon     : icône de la carte (phase de lune) ; défaut = icône de la monnaie
+       featured : true = carte mise en avant (bordure dégradée améthyste)
        tag      : texte du petit ruban en haut à droite
-       payUrl   : lien de paiement (Tebex, Stripe, PayPal…). Vide = « bientôt ».
+       payUrl   : lien de paiement direct (si pas de backend). Vide = « bientôt ».
+
+       ⚠️ Les `id` et les TOTAUX doivent rester synchro avec le catalogue serveur
+       (AeraSRP/payments/catalog.js) — c'est lui qui fait foi pour le prix payé.
     */
     packs: [
-      { id: 'pack-recharge',   name: 'Pack Recharge',   amount: 150,   bonus: 0,  price: '1.99',  tag: 'Recharge',  payUrl: '' },
-      { id: 'pack-decouverte', name: 'Pack Découverte', amount: 500,   bonus: 0,  price: '4.99',  tag: 'Starter',   payUrl: '' },
-      { id: 'pack-aventurier', name: 'Pack Aventurier', amount: 1200,  bonus: 10, price: '9.99',  tag: 'Bonus +10%', payUrl: '' },
-      { id: 'pack-guerrier',   name: 'Pack Guerrier',   amount: 2500,  bonus: 15, price: '19.99', tag: 'Populaire',  featured: true, payUrl: '' },
-      { id: 'pack-seigneur',   name: 'Pack Seigneur',   amount: 6000,  bonus: 20, price: '39.99', tag: 'Bonus +20%', payUrl: '' },
-      { id: 'pack-legende',    name: 'Pack Légende',    amount: 15000, bonus: 25, price: '89.99', tag: 'Le meilleur', payUrl: '' }
+      { id: 'pack-croissant-de-lune',  name: 'Croissant de Lune',   amount: 150,   bonus: 0,  price: '1.99',  icon: '🌙', tag: 'Recharge',    payUrl: '' },
+      { id: 'pack-premier-quartier',   name: 'Premier Quartier',    amount: 500,   bonus: 0,  price: '4.99',  icon: '🌓', tag: 'Starter',     payUrl: '' },
+      { id: 'pack-pleine-lune',        name: 'Pleine Lune',         amount: 1200,  bonus: 10, price: '9.99',  icon: '🌕', tag: 'Bonus +10%',  payUrl: '' },
+      { id: 'pack-aura-crepusculaire', name: 'Aura Crépusculaire',  amount: 2500,  bonus: 15, price: '19.99', icon: '🌌', tag: 'Populaire',   featured: true, payUrl: '' },
+      { id: 'pack-eclipse-amethyste',  name: "Éclipse d'Améthyste", amount: 6000,  bonus: 20, price: '39.99', icon: '🌘', tag: 'Bonus +20%',  payUrl: '' },
+      { id: 'pack-supernova',          name: 'Supernova',           amount: 15000, bonus: 25, price: '89.99', icon: '💫', tag: 'Le meilleur', payUrl: '' }
     ]
   };
 
@@ -99,7 +111,7 @@
 
       card.innerHTML =
         ribbon +
-        '<div class="card__icon" aria-hidden="true">' + CUR.icon + '</div>' +
+        '<div class="card__icon" aria-hidden="true">' + (p.icon || CUR.icon) + '</div>' +
         '<h4 class="card__title">' + p.name + '</h4>' +
         '<div class="pack__amount">' +
           '<span class="pack__coin-icon" aria-hidden="true">' + CUR.icon + '</span>' +
@@ -165,7 +177,7 @@
     btn.addEventListener('click', function () {
       var ip = btn.getAttribute('data-ip') || CONFIG.server.ip;
       copyText(ip).then(
-        function () { showToast('🌸 IP copiée : ' + ip); },
+        function () { showToast('✦ IP copiée : ' + ip); },
         function () { showToast('Copie impossible - IP : ' + ip); }
       );
     });
@@ -227,26 +239,27 @@
   })();
 
   /* ==========================================================================
-     5. PÉTALES DE CERISIER (décoratif)
+     5. CIEL ÉTOILÉ (décoratif)
+     Étoiles scintillantes réparties dans la bannière. Quelques-unes sont
+     dorées, en rappel de la monnaie. Pour en ajouter/retirer : STAR_COUNT.
      ========================================================================== */
-  var PETAL_COUNT = 16;
-  var petalsBox = document.getElementById('petals');
+  var STAR_COUNT = 70;
+  var starsBox = document.getElementById('stars');
   var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  if (petalsBox && !reduceMotion) {
-    var tones = ['#ffcfe4', '#ffb0d3', '#ffe6f1', '#ff85bd'];
-    for (var i = 0; i < PETAL_COUNT; i++) {
-      var petal = document.createElement('span');
-      var size = 8 + Math.random() * 10;
-      petal.className = 'petal';
-      petal.style.left = (Math.random() * 100) + '%';
-      petal.style.width = size + 'px';
-      petal.style.height = size + 'px';
-      petal.style.background = tones[Math.floor(Math.random() * tones.length)];
-      petal.style.opacity = (0.4 + Math.random() * 0.5).toFixed(2);
-      petal.style.animationDuration = (7 + Math.random() * 9).toFixed(1) + 's';
-      petal.style.animationDelay = (-Math.random() * 12).toFixed(1) + 's';
-      petalsBox.appendChild(petal);
+  if (starsBox && !reduceMotion) {
+    for (var i = 0; i < STAR_COUNT; i++) {
+      var star = document.createElement('span');
+      var size = 1 + Math.random() * 2.6;
+      // 1 étoile sur 5 est dorée (couleur des Étoiles)
+      star.className = 'star' + (Math.random() < 0.2 ? ' star--gold' : '');
+      star.style.left = (Math.random() * 100) + '%';
+      star.style.top = (Math.random() * 100) + '%';
+      star.style.width = size.toFixed(1) + 'px';
+      star.style.height = size.toFixed(1) + 'px';
+      star.style.animationDuration = (2.2 + Math.random() * 4).toFixed(1) + 's';
+      star.style.animationDelay = (-Math.random() * 6).toFixed(1) + 's';
+      starsBox.appendChild(star);
     }
   }
 
@@ -257,22 +270,105 @@
   if (yearEl) yearEl.textContent = new Date().getFullYear();
 
   /* ==========================================================================
-     7. GARDE-FOU BOUTONS « ACHETER » (packs sans lien de paiement)
-     Les liens vivent dans CONFIG.packs[].payUrl. Tant qu'un lien est vide,
-     le bouton n'ouvre rien et prévient l'acheteur.
+     7. ACHAT — pseudo + redirection Stripe (via le backend du bot)
+     --------------------------------------------------------------------------
+     • CONFIG.payments.apiBase renseigné → clic « Acheter » ouvre la modale de
+       saisie du pseudo, puis POST {apiBase}/checkout, puis redirection Stripe.
+     • Sinon, si le pack a un payUrl → lien direct (compat Tebex/PayPal…).
+     • Sinon → message « bientôt disponible ».
+     Gère aussi le retour de Stripe (?achat=succes|annule).
      ========================================================================== */
-  document.querySelectorAll('[data-product]').forEach(function (link) {
-    var url = link.getAttribute('href');
+  (function () {
+    var API = (CONFIG.payments && CONFIG.payments.apiBase) ? CONFIG.payments.apiBase.replace(/\/+$/, '') : '';
+    var IGN_RE = /^[A-Za-z0-9_]{3,16}$/;
 
-    if (url && url !== '#') {
-      link.target = '_blank';
-      link.rel = 'noopener';
-      return;
+    var packById = {};
+    CONFIG.packs.forEach(function (p) { packById[p.id] = p; });
+
+    var modal    = document.getElementById('buyModal');
+    var mPack    = document.getElementById('buyModalPack');
+    var mInput   = document.getElementById('buyModalIgn');
+    var mError   = document.getElementById('buyModalError');
+    var mConfirm = document.getElementById('buyModalConfirm');
+    var mCancel  = document.getElementById('buyModalCancel');
+    var current  = null;
+
+    function openModal(pack) {
+      current = pack;
+      if (mError)  mError.textContent = '';
+      if (mPack)   mPack.textContent = pack.name + ' — ' + pack.price + ' €';
+      if (mInput)  mInput.value = (function () { try { return localStorage.getItem('smp_ign') || ''; } catch (e) { return ''; } })();
+      if (mConfirm){ mConfirm.disabled = false; mConfirm.textContent = 'Payer'; }
+      if (modal)   modal.hidden = false;
+      if (mInput)  mInput.focus();
+    }
+    function closeModal() { if (modal) modal.hidden = true; current = null; }
+
+    function submit() {
+      if (!current) return;
+      var ign = (mInput ? mInput.value : '').trim();
+      var core = ign.charAt(0) === '.' ? ign.slice(1) : ign; // tolère un préfixe Bedrock '.'
+      if (!IGN_RE.test(core)) {
+        if (mError) mError.textContent = 'Pseudo invalide (3–16 caractères : lettres, chiffres, _).';
+        return;
+      }
+      if (mConfirm) { mConfirm.disabled = true; mConfirm.textContent = 'Redirection…'; }
+      fetch(API + '/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ packId: current.id, ign: ign })
+      })
+        .then(function (r) { return r.json().then(function (d) { return { ok: r.ok, d: d }; }); })
+        .then(function (res) {
+          if (res.ok && res.d && res.d.url) {
+            try { localStorage.setItem('smp_ign', ign); } catch (e) { /* ignore */ }
+            window.location.href = res.d.url;
+          } else {
+            throw new Error(res.d && res.d.error ? res.d.error : 'Erreur inconnue.');
+          }
+        })
+        .catch(function (err) {
+          if (mError) mError.textContent = err.message || 'Paiement momentanément indisponible.';
+          if (mConfirm) { mConfirm.disabled = false; mConfirm.textContent = 'Payer'; }
+        });
     }
 
-    link.addEventListener('click', function (e) {
-      e.preventDefault();
-      showToast('🛠️ Boutique bientôt disponible - passe sur le Discord !');
+    if (mConfirm) mConfirm.addEventListener('click', submit);
+    if (mCancel)  mCancel.addEventListener('click', closeModal);
+    if (mInput)   mInput.addEventListener('keydown', function (e) { if (e.key === 'Enter') submit(); });
+    if (modal)    modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal && !modal.hidden) closeModal(); });
+
+    document.querySelectorAll('[data-product]').forEach(function (link) {
+      var pack = packById[link.getAttribute('data-product')];
+      var url  = link.getAttribute('href');
+
+      if (API && pack) {                       // backend configuré → modale pseudo
+        link.addEventListener('click', function (e) { e.preventDefault(); openModal(pack); });
+        return;
+      }
+      if (url && url !== '#') {                 // pas de backend, mais un lien direct
+        link.target = '_blank';
+        link.rel = 'noopener';
+        return;
+      }
+      link.addEventListener('click', function (e) {   // rien de configuré
+        e.preventDefault();
+        showToast('🛠️ Boutique bientôt disponible - passe sur le Discord !');
+      });
     });
-  });
+
+    // Retour de Stripe : ?achat=succes | annule
+    try {
+      var params = new URLSearchParams(window.location.search);
+      var achat = params.get('achat');
+      if (achat === 'succes')      showToast('✅ Paiement reçu ! Tes ' + CUR.name + ' arrivent en jeu.');
+      else if (achat === 'annule') showToast('Paiement annulé — aucun montant débité.');
+      if (achat) {
+        params.delete('achat');
+        var qs = params.toString();
+        history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+      }
+    } catch (e) { /* URLSearchParams indisponible : on ignore */ }
+  })();
 })();
